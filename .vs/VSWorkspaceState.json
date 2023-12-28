@@ -1,0 +1,13 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\public",
+    "\\resources",
+    "\\src",
+    "\\src\\router",
+    "\\src\\store",
+    "\\src\\views"
+  ],
+  "SelectedNode": "\\src\\views\\FolderPage.vue",
+  "PreviewInSolutionExplorer": false
+}
