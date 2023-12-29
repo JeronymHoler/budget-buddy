@@ -7,9 +7,10 @@ storage.create();
 export default createStore({
     state: {
         appPages: [],
-        appPageData: {},
+        appPageData: [],
         isLoading: false,
         hasAppPageData: false,
+        maxSettingsPercents: 0
     },
     mutations: {
         updateAppPages(state, newData) {
@@ -23,6 +24,9 @@ export default createStore({
         },
         setAppPageData(state, hasData) {
             state.hasAppPageData = hasData;
+        },
+        updateMaxSettingsPercents(state, percents) {
+            state.maxSettingsPercents = percents;
         },
     },
     actions: {
@@ -66,14 +70,78 @@ export default createStore({
                 const appPages = await storage.get('appPages') || [];
                 if (appPages.length > 0) {
                     const page = appPages.filter(function (el) { return el.key == id })[0];
-                    let pageData = await storage.get(page.key) || [];
-                    pageData = pageData.filter(function (el) { return el.enabled });
+                    const pageData = await storage.get(page.key) || [];
+                    pageData.budget = pageData.budget.filter(function (el) { return el.enabled });
                     const returnData = { page: page, data: pageData };
                     commit('updateAppPageData', returnData);
                     commit('setAppPageData', true);
                 }
             } catch (error) {
                 console.error('Error loading data for page:', error);
+            } finally {
+                commit('setLoading', false);
+            }
+        },
+        async getMaxSettingsPercents({ commit }, key) {
+            commit('setLoading', true);
+
+            try {
+                const pageData = await storage.get(key) || [];
+                let maxSettingsPercents = 100;
+                for (let i = 0; i < pageData.budget.length; i++) {
+                    maxSettingsPercents -= pageData.budget[i].settings.budgetPercents;
+                }
+                commit('updateMaxSettingsPercents', maxSettingsPercents);
+            } catch (error) {
+                console.error('Error loading data for settings:', error);
+            } finally {
+                commit('setLoading', false);
+            }
+        },
+        async saveAppPageDataSettings({ commit }, data) {
+            commit('setLoading', true);
+
+            try {
+                const pageData = await storage.get(data.key) || [];
+                pageData.budget[data.index].settings = data.settings;
+                storage.set(data.key, pageData);
+
+                let maxSettingsPercents = 100;
+                for (let i = 0; i < pageData.budget.length; i++) {
+                    maxSettingsPercents -= pageData.budget[i].settings.budgetPercents;
+                }
+                commit('updateMaxSettingsPercents', maxSettingsPercents);
+            } catch (error) {
+                console.error('Error saving page data settings:', error);
+            } finally {
+                commit('setLoading', false);
+            }
+        },
+        async addAppPageDataIncome({ commit }, data) {
+            commit('setLoading', true);
+
+            try {
+                const pageData = await storage.get(data.key) || [];
+                pageData.income.push(data.income);
+                pageData.income.sort(function (a, b) {
+                    return (b.date < a.date) ? -1 : ((b.date > a.date) ? 1 : 0);
+                });
+                storage.set(data.key, pageData);
+            } catch (error) {
+                console.error('Error saving page data income:', error);
+            } finally {
+                commit('setLoading', false);
+            }
+        },
+        async deleteAppPageDataIncome({ commit }, data) {
+            commit('setLoading', true);
+
+            try {
+                const pageData = await storage.get(data.key) || [];
+                pageData.income.splice(data.index, 1);
+                storage.set(data.key, pageData);
+            } catch (error) {
+                console.error('Error saving page data income:', error);
             } finally {
                 commit('setLoading', false);
             }
