@@ -166,47 +166,78 @@
             }
         }
 
-        const newItemData = [
-            {
-                title: 'Nutné výdaje',
-                enabled: necessaryExpenses.value,
-                data: []
-            },
-            {
-                title: 'Jídlo',
-                enabled: food.value,
-                data: []
-            },
-            {
-                title: 'Auto',
-                enabled: car.value,
-                data: []
+        const newItemData = {
+            income: [],
+            budget: [
+                {
+                    title: 'Nutné výdaje',
+                    enabled: necessaryExpenses.value,
+                    settings: {
+                        budget: 0,
+                        budgetPercents: 0
+                    },
+                    data: []
+                },
+                {
+                    title: 'Jídlo',
+                    enabled: food.value,
+                    settings: {
+                        budget: 0,
+                        budgetPercents: 0
+                    },
+                    data: []
+                },
+                {
+                    title: 'Auto',
+                    enabled: car.value,
+                    settings: {
+                        budget: 0,
+                        budgetPercents: 0
+                    },
+                    data: []
 
-            },
-            {
-                title: 'Investice',
-                enabled: investments.value,
-                data: []
+                },
+                {
+                    title: 'Investice',
+                    enabled: investments.value,
+                    settings: {
+                        budget: 0,
+                        budgetPercents: 0
+                    },
+                    data: []
 
-            },
-            {
-                title: 'Děti',
-                enabled: kids.value,
-                data: []
+                },
+                {
+                    title: 'Děti',
+                    enabled: kids.value,
+                    settings: {
+                        budget: 0,
+                        budgetPercents: 0
+                    },
+                    data: []
 
-            },
-            {
-                title: 'Domácí mazlíčci',
-                enabled: pets.value,
-                data: []
-            }
-,
-            {
-                title: 'Nečekané výdaje',
-                enabled: unexpectedExpenses.value,
-                data: []
-            }
-        ];
+                },
+                {
+                    title: 'Domácí mazlíčci',
+                    enabled: pets.value,
+                    settings: {
+                        budget: 0,
+                        budgetPercents: 0
+                    },
+                    data: []
+                }
+                ,
+                {
+                    title: 'Nečekané výdaje',
+                    enabled: unexpectedExpenses.value,
+                    settings: {
+                        budget: 0,
+                        budgetPercents: 0
+                    },
+                    data: []
+                }
+            ]
+        };
         await store.dispatch('insertToAppPages', {page: newItem, pageData: newItemData });
         router.push(newItem.url);
         return true;
