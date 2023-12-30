@@ -59,21 +59,17 @@
                     </ion-grid>
 
                     <ion-list>
-                        <ion-item>
-                            <ion-label>Item</ion-label>
-                        </ion-item>
-
-                        <ion-item>
-                            <ion-label>Item</ion-label>
-                        </ion-item>
-
-                        <ion-item>
-                            <ion-label>Item</ion-label>
-                        </ion-item>
-
-                        <ion-item lines="none">
-                            <ion-label>Item</ion-label>
-                        </ion-item>
+                        <template v-for="(item, k) in appPageData.data.budget[i].data">
+                            <ion-item v-if="k < 3">
+                                <ion-grid>
+                                    <ion-row class="align-items-center">
+                                        <ion-col size="2">{{getDayFromISODate(item.date)}}.</ion-col>
+                                        <ion-col size="7">{{item.name}}</ion-col>
+                                        <ion-col size="3">- {{item.price}}</ion-col>
+                                    </ion-row>
+                                </ion-grid>
+                            </ion-item>
+                        </template>
                     </ion-list>
                     <ion-grid class="ion-text-center">
                         <ion-row>
@@ -154,14 +150,20 @@
 
                     <ion-list>
                         <ion-item v-for="(item, i) in appPageData.data.income">
-                            <ion-label>{{getDayFromISODate(item.date)}}.</ion-label>
-                            <ion-label>{{item.name}}</ion-label>
-                            <ion-label>{{item.price}}</ion-label>
-                            <ion-buttons>
-                                <ion-button @click="showIncomeDeleteAlert(i)">
-                                    <ion-icon slot="end" :icon="trash"></ion-icon>
-                                </ion-button>
-                            </ion-buttons>
+                            <ion-grid>
+                                <ion-row class="align-items-center">
+                                    <ion-col size="2">{{getDayFromISODate(item.date)}}.</ion-col>
+                                    <ion-col size="5">{{item.name}}</ion-col>
+                                    <ion-col size="3">- {{item.price}}</ion-col>
+                                    <ion-col size="2">
+                                        <ion-buttons>
+                                            <ion-button @click="showIncomeDeleteAlert(i)">
+                                                <ion-icon slot="end" :icon="trash"></ion-icon>
+                                            </ion-button>
+                                        </ion-buttons>
+                                    </ion-col>
+                                </ion-row>
+                            </ion-grid>
                         </ion-item>
                     </ion-list>
                     <ion-title v-if="appPageData.data.income.length < 1">Zatím nemáte zadané<br>žádné příjmy</ion-title>
@@ -199,17 +201,23 @@
 
                     <ion-list>
                         <ion-item v-for="(item, i) in appPageData.data.budget[activeDetail].data">
-                            <ion-label>{{getDayFromISODate(item.date)}}.</ion-label>
-                            <ion-label>{{item.name}}</ion-label>
-                            <ion-label>{{item.price}}</ion-label>
-                            <ion-buttons>
-                                <ion-button @click="showSpendingDeleteAlert(i)">
-                                    <ion-icon slot="end" :icon="trash"></ion-icon>
-                                </ion-button>
-                            </ion-buttons>
+                            <ion-grid>
+                                <ion-row class="align-items-center">
+                                    <ion-col size="2">{{getDayFromISODate(item.date)}}.</ion-col>
+                                    <ion-col size="5">{{item.name}}</ion-col>
+                                    <ion-col size="3">- {{item.price}}</ion-col>
+                                    <ion-col size="2">
+                                        <ion-buttons>
+                                            <ion-button @click="showSpendingDeleteAlert(i)">
+                                                <ion-icon slot="end" :icon="trash"></ion-icon>
+                                            </ion-button>
+                                        </ion-buttons>
+                                    </ion-col>
+                                </ion-row>
+                            </ion-grid>
                         </ion-item>
                     </ion-list>
-                    <ion-title v-if="appPageData.data.budget[activeDetail].data.length < 1">Zatím nemáte zde zadané<br>žádné výdaje</ion-title>
+                    <ion-title v-if="appPageData.data.budget[activeDetail].data.length < 1">Zatím nemáte zadané<br>žádné výdaje</ion-title>
 
                 </ion-content>
             </ion-modal>
@@ -650,5 +658,9 @@
 
     .radio-checked.ios::part(container) {
         border-color: var(--ion-color-primary);
+    }
+
+    ion-row.align-items-center {
+        align-items: center;
     }
 </style>
