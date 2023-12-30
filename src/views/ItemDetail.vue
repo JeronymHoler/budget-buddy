@@ -75,6 +75,13 @@
                             <ion-label>Item</ion-label>
                         </ion-item>
                     </ion-list>
+                    <ion-grid class="ion-text-center">
+                        <ion-row>
+                            <ion-col size="12">
+                                <ion-button @click="openDetail(i)">Detail</ion-button>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
                 </ion-card-content>
             </ion-card>
 
@@ -139,7 +146,7 @@
                         <ion-row class="ion-text-center">
                             <ion-col>
                                 <ion-button @click="showCreateIncomeAlert">
-                                    <ion-icon slot="start" :icon="add"></ion-icon>Přidat příjem
+                                    <ion-icon slot="start" :icon="add"></ion-icon>Přidat výdaj
                                 </ion-button>
                             </ion-col>
                         </ion-row>
@@ -158,6 +165,51 @@
                         </ion-item>
                     </ion-list>
                     <ion-title v-if="appPageData.data.income.length < 1">Zatím nemáte zadané<br>žádné příjmy</ion-title>
+
+                </ion-content>
+            </ion-modal>
+
+            <ion-modal :is-open="isDetailOpen">
+                <ion-header>
+                    <ion-toolbar>
+                        <ion-title>Výdaje: {{appPageData.data.budget[activeDetail].title}}</ion-title>
+                        <ion-buttons slot="end">
+                            <ion-button @click="closeDetail()">Zavřít</ion-button>
+                        </ion-buttons>
+                    </ion-toolbar>
+                </ion-header>
+                <ion-content class="ion-padding">
+                    <ion-grid>
+                        <ion-row>
+                            <ion-col>
+                                <h3>Výdaje celkem:</h3>
+                            </ion-col>
+                            <ion-col>
+                                <h3>{{getTotalBudgetSpendings()}}</h3>
+                            </ion-col>
+                        </ion-row>
+                        <ion-row class="ion-text-center">
+                            <ion-col>
+                                <ion-button @click="showCreateSpendingAlert">
+                                    <ion-icon slot="start" :icon="add"></ion-icon>Přidat výdaj
+                                </ion-button>
+                            </ion-col>
+                        </ion-row>
+                    </ion-grid>
+
+                    <ion-list>
+                        <ion-item v-for="(item, i) in appPageData.data.budget[activeDetail].data">
+                            <ion-label>{{getDayFromISODate(item.date)}}.</ion-label>
+                            <ion-label>{{item.name}}</ion-label>
+                            <ion-label>{{item.price}}</ion-label>
+                            <ion-buttons>
+                                <ion-button @click="showSpendingDeleteAlert(i)">
+                                    <ion-icon slot="end" :icon="trash"></ion-icon>
+                                </ion-button>
+                            </ion-buttons>
+                        </ion-item>
+                    </ion-list>
+                    <ion-title v-if="appPageData.data.budget[activeDetail].data.length < 1">Zatím nemáte zde zadané<br>žádné výdaje</ion-title>
 
                 </ion-content>
             </ion-modal>
@@ -331,7 +383,6 @@
     // income start
     /////////////////////
     const isIncomeOpen = ref(false);
-    const addIncomeOpen = ref(false);
     const openIncome = () => {
         isIncomeOpen.value = true;
     };
@@ -349,7 +400,6 @@
         }
         await store.dispatch('addAppPageDataIncome', data);
         await store.dispatch('getAppPageData', route.params.id);
-        addIncomeOpen.value = false;
     };
     const getDayFromISODate = (isoDate: string) => {
         let date = new Date(isoDate);
@@ -394,8 +444,7 @@
                     name: 'price',
                     type: 'number',
                     placeholder: '50000',
-                    label: 'Příjem',
-                    value: 0
+                    label: 'Příjem'
                 },
                 {
                     name: 'date',
@@ -431,6 +480,114 @@
         return totalIncome;
     };
 
+
+    /////////////////////
+    // spendings detail start
+    /////////////////////
+    const isDetailOpen = ref(false);
+    const activeDetail = ref(-1)
+    const openDetail = (index) => {
+        activeDetail.value = index
+        isDetailOpen.value = true;
+    };
+    const closeDetail = () => {
+        isDetailOpen.value = false;
+    };
+    const showCreateSpendingAlert = async () => {
+        const alert = await alertController.create({
+            header: 'Přidat výdaj',
+            message: 'Vyplňte informace o novém výdaji.',
+            inputs: [
+                {
+                    name: 'name',
+                    type: 'text',
+                    placeholder: 'Nájem',
+                    label: 'Titulek'
+                },
+                {
+                    name: 'price',
+                    type: 'number',
+                    placeholder: '15000',
+                    label: 'Výdaj'
+                },
+                {
+                    name: 'date',
+                    type: 'date',
+                    label: 'Datum',
+                    value: getDateInputDefaultValue(),
+                    min: getDateInputMinValue(),
+                    max: getDateInputMaxValue(),
+                },
+            ],
+            buttons: [
+                { 
+                    text: 'Zrušit',
+                    role: 'cancel'
+                },
+                {
+                    text: 'Ok',
+                    handler: (alertData) => {
+                        if (alertData.name != '' || alertData.price > 0){
+                            saveSpending(alertData);
+                        }
+                    }
+                }
+            ]
+        });
+        await alert.present();
+    };
+    const showSpendingDeleteAlert = async (index: number) => {
+        const alert = await alertController.create({
+            header: `Přejete si smazat položku?`,
+            buttons: [
+                {
+                    text: 'Zrušit',
+                    role: 'cancel',
+                    handler: async () => {
+                        console.log('Action canceled');
+                    },
+                },
+                {
+                    text: 'OK',
+                    role: 'confirm',
+                    handler: async () => {
+                        console.log('Action confirmed');
+                        await store.dispatch('deleteAppPageDataSpending', {key: route.params.id, dataIndex: index, budgetIndex: activeDetail.value});
+                        await store.dispatch('getAppPageData', route.params.id);
+                    },
+                },
+            ]
+        });
+        await alert.present();
+    };
+    const saveSpending = async (spending: object) => {
+        const data = {
+            key: appPageData.value.page.key,
+            index: activeDetail.value,
+            spending: {
+                name: spending.name,
+                price: parseInt(spending.price),
+                date: spending.date
+            }
+        }
+        await store.dispatch('addAppPageDataSpending', data);
+        await store.dispatch('getAppPageData', route.params.id);
+    };
+    const getTotalBudgetSpendings = () => {
+        var totalSpendings = 0;
+        appPageData.value.data.budget[activeDetail.value].data.forEach((element: object) => {
+            totalSpendings += element.price;
+        });
+        return totalSpendings;
+    };
+    //todo dodelat
+    const getTotalSpendings = () => {
+        var totalSpendings = 0;
+        appPageData.value.data.income.forEach((element: object) => {
+            totalSpendings += element.price;
+        });
+        return totalSpendings;
+    };
 </script>
 
 <style scoped>

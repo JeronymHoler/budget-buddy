@@ -141,7 +141,36 @@ export default createStore({
                 pageData.income.splice(data.index, 1);
                 storage.set(data.key, pageData);
             } catch (error) {
-                console.error('Error saving page data income:', error);
+                console.error('Error deleting page data income:', error);
+            } finally {
+                commit('setLoading', false);
+            }
+        },
+        async addAppPageDataSpending({ commit }, data) {
+            commit('setLoading', true);
+
+            try {
+                const pageData = await storage.get(data.key) || [];
+                pageData.budget[data.index].data.push(data.spending);
+                pageData.budget[data.index].data.sort(function (a, b) {
+                    return (b.date < a.date) ? -1 : ((b.date > a.date) ? 1 : 0);
+                });
+                storage.set(data.key, pageData);
+            } catch (error) {
+                console.error('Error saving page data spending:', error);
+            } finally {
+                commit('setLoading', false);
+            }
+        },
+        async deleteAppPageDataSpending({ commit }, data) {
+            commit('setLoading', true);
+
+            try {
+                const pageData = await storage.get(data.key) || [];
+                pageData.budget[data.budgetIndex].data.splice(data.dataIndex, 1);
+                storage.set(data.key, pageData);
+            } catch (error) {
+                console.error('Error deleting page data spending:', error);
             } finally {
                 commit('setLoading', false);
             }
