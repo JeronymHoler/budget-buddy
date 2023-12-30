@@ -230,9 +230,7 @@
     // route
     const route = useRoute();
 
-    //date
-    const date = new Date;
-
+    // page data
     const store = useStore();
     const isLoading = ref(false);
 
@@ -240,11 +238,30 @@
         isLoading.value = true;
         await store.dispatch('getAppPageData', route.params.id);
         await store.dispatch('getMaxSettingsPercents', route.params.id);
+        initializeDate();
         isLoading.value = false;
     });
 
     const appPageData = computed(() => store.state.appPageData);
     const hasAppPageData = computed(() => store.state.hasAppPageData);
+
+
+    // date
+    let date;
+    const initializeDate = () => {
+        date = new Date(appPageData.value.page.year, appPageData.value.page.month, 2);
+    };
+    const getDateInputMinValue = () => {
+        return new Date(date.getFullYear(), date.getMonth() + 0, 2).toISOString().split('T')[0];
+    };
+    const getDateInputMaxValue = () => {
+        return new Date(date.getFullYear(), date.getMonth() + 1, 1).toISOString().split('T')[0];
+    };
+    const getDateInputDefaultValue = () => {
+        return date.toISOString().split('T')[0];
+    };
+
+
 
     const newItemURL = '/item/New'
 
@@ -384,9 +401,9 @@
                     name: 'date',
                     type: 'date',
                     label: 'Datum',
-                    value: date.toISOString().split('T')[0],
-                    min: new Date(date.getFullYear(), date.getMonth() + 0, 2).toISOString().split('T')[0],
-                    max: new Date(date.getFullYear(), date.getMonth() + 1, 1).toISOString().split('T')[0],
+                    value: getDateInputDefaultValue(),
+                    min: getDateInputMinValue(),
+                    max: getDateInputMaxValue(),
                 },
             ],
             buttons: [

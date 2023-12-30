@@ -130,7 +130,7 @@
     const selectMonths = ['Leden', 'Únor', 'Březen', 'Duben', 'Květen', 'Červen', 'Červenec', 'Srpen', 'Září', 'Říjen', 'Listopad', 'Prosinec'];
     const selectYears = ref([]);
     const getYearsList = () => {
-        const startYear = 1990;
+        const startYear = 2000;
         const endYear = new Date().getFullYear();
         for (let i = endYear; i >= startYear; i--) {
             selectYears.value = [...selectYears.value, i];
