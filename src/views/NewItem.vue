@@ -89,7 +89,6 @@
         IonLabel,
         IonSelect,
         IonSelectOption,
-        IonInput,
         IonList,
         IonCheckbox,
         IonButton,

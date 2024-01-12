@@ -24,62 +24,55 @@
                 </ion-toolbar>
             </ion-header>
 
-            <ion-card v-for="(item, i) in appPageData.data.budget" :key="i">
-                <ion-card-header>
-                    <ion-toolbar>
-                        <ion-card-title>{{item.title}}</ion-card-title>
-                        <ion-buttons slot="end">
-                            <ion-button @click="openSettings(i)" size="large">
-                                <ion-icon :icon="settings" color="black"></ion-icon>
-                            </ion-button>
-                        </ion-buttons>
-                    </ion-toolbar>
-                </ion-card-header>
-                <ion-card-content>
-                    <ion-grid class="ion-text-center">
-                        <ion-row>
-                            <ion-col>
-                                <ion-card-title>
-                                    Header 1
-                                </ion-card-title>
-                                <ion-text>
-                                    Price: $100
-                                </ion-text>
-                            </ion-col>
+            <template v-for="(item, i) in appPageData.data.budget">
+                <ion-card v-if="item.enabled" :key="i">
+                    <ion-card-header>
+                        <ion-toolbar>
+                            <ion-card-title>{{item.title}}</ion-card-title>
+                            <ion-buttons slot="end">
+                                <ion-button @click="openSettings(i)" size="large">
+                                    <ion-icon :icon="settings" color="black"></ion-icon>
+                                </ion-button>
+                            </ion-buttons>
+                        </ion-toolbar>
+                    </ion-card-header>
+                    <ion-card-content>
+                        <ion-grid class="ion-text-center">
+                            <ion-row>
+                                <ion-col>
+                                    <ion-text>Výdaje</ion-text>
+                                    <ion-card-title>{{getTotalBudgetSpendings(i)}}&nbsp;{{appSettings.currency}}</ion-card-title>
+                                </ion-col>
+                                <ion-col>
+                                    <ion-text>Zbývá</ion-text>
+                                    <ion-card-title>{{getTotalBudgetBalance(i)}}&nbsp;{{appSettings.currency}}</ion-card-title>
+                                </ion-col>
+                            </ion-row>
+                        </ion-grid>
 
-                            <ion-col>
-                                <ion-card-title>
-                                    Header 2
-                                </ion-card-title>
-                                <ion-text>
-                                    Price: $150
-                                </ion-text>
-                            </ion-col>
-                        </ion-row>
-                    </ion-grid>
-
-                    <ion-list>
-                        <template v-for="(item, k) in appPageData.data.budget[i].data">
-                            <ion-item v-if="k < 3">
-                                <ion-grid>
-                                    <ion-row class="align-items-center">
-                                        <ion-col size="2">{{getDayFromISODate(item.date)}}.</ion-col>
-                                        <ion-col size="7">{{item.name}}</ion-col>
-                                        <ion-col size="3">- {{item.price}}</ion-col>
-                                    </ion-row>
-                                </ion-grid>
-                            </ion-item>
-                        </template>
-                    </ion-list>
-                    <ion-grid class="ion-text-center">
-                        <ion-row>
-                            <ion-col size="12">
-                                <ion-button @click="openDetail(i)">Detail</ion-button>
-                            </ion-col>
-                        </ion-row>
-                    </ion-grid>
-                </ion-card-content>
-            </ion-card>
+                        <ion-list>
+                            <template v-for="(item, k) in appPageData.data.budget[i].data">
+                                <ion-item v-if="k < 3">
+                                    <ion-grid>
+                                        <ion-row class="align-items-center">
+                                            <ion-col size="2">{{getDayFromISODate(item.date)}}.</ion-col>
+                                            <ion-col size="7">{{item.name}}</ion-col>
+                                            <ion-col size="3">-{{item.price}} {{}}</ion-col>
+                                        </ion-row>
+                                    </ion-grid>
+                                </ion-item>
+                            </template>
+                        </ion-list>
+                        <ion-grid class="ion-text-center">
+                            <ion-row>
+                                <ion-col size="12">
+                                    <ion-button @click="openDetail(i)">Detail</ion-button>
+                                </ion-col>
+                            </ion-row>
+                        </ion-grid>
+                    </ion-card-content>
+                </ion-card>
+            </template>
 
             <ion-modal :is-open="isSettingsOpen">
                 <ion-header>
@@ -103,7 +96,7 @@
                             <ion-col>
                                 <ion-item>
                                     <ion-label>Procenta</ion-label>
-                                    <ion-radio value="percents" mode="md" item-left :disabled="settingsBudgetPercentsDisabled" @click="test"></ion-radio>
+                                    <ion-radio value="percents" mode="md" item-left :disabled="settingsBudgetPercentsDisabled"></ion-radio>
                                 </ion-item>
                             </ion-col>
                         </ion-row>
@@ -136,13 +129,13 @@
                                 <h3>Příjmy celkem:</h3>
                             </ion-col>
                             <ion-col>
-                                <h3>{{getTotalIncome()}}</h3>
+                                <h3>{{getTotalIncome()}}&nbsp;{{appSettings.currency}}</h3>
                             </ion-col>
                         </ion-row>
                         <ion-row class="ion-text-center">
                             <ion-col>
                                 <ion-button @click="showCreateIncomeAlert">
-                                    <ion-icon slot="start" :icon="add"></ion-icon>Přidat výdaj
+                                    <ion-icon slot="start" :icon="add"></ion-icon>Přidat příjem
                                 </ion-button>
                             </ion-col>
                         </ion-row>
@@ -154,7 +147,7 @@
                                 <ion-row class="align-items-center">
                                     <ion-col size="2">{{getDayFromISODate(item.date)}}.</ion-col>
                                     <ion-col size="5">{{item.name}}</ion-col>
-                                    <ion-col size="3">- {{item.price}}</ion-col>
+                                    <ion-col size="3">+{{item.price}}</ion-col>
                                     <ion-col size="2">
                                         <ion-buttons>
                                             <ion-button @click="showIncomeDeleteAlert(i)">
@@ -182,12 +175,20 @@
                 </ion-header>
                 <ion-content class="ion-padding">
                     <ion-grid>
-                        <ion-row>
-                            <ion-col>
-                                <h3>Výdaje celkem:</h3>
+                        <ion-row class="ion-text-center">
+                            <ion-col size="6">
+                                <ion-label>Výdaje celkem</ion-label>
                             </ion-col>
-                            <ion-col>
-                                <h3>{{getTotalBudgetSpendings()}}</h3>
+                            <ion-col size="6">
+                                <ion-label>Nastavený budget</ion-label>
+                            </ion-col>
+                            <ion-col size="6"><strong>{{getTotalBudgetSpendings(activeDetail)}}&nbsp;{{appSettings.currency}}</strong></ion-col>
+                            <ion-col size="6"><strong>{{getBudgetSettings(activeDetail)}}&nbsp;{{appSettings.currency}}</strong></ion-col>
+                            <ion-col size="12">
+                                <ion-label>Zbývá</ion-label>
+                            </ion-col>
+                            <ion-col size="12" class="spending-budget">
+                                <span><strong>{{getTotalBudgetBalance(activeDetail)}}&nbsp;{{appSettings.currency}}</strong></span>
                             </ion-col>
                         </ion-row>
                         <ion-row class="ion-text-center">
@@ -205,7 +206,7 @@
                                 <ion-row class="align-items-center">
                                     <ion-col size="2">{{getDayFromISODate(item.date)}}.</ion-col>
                                     <ion-col size="5">{{item.name}}</ion-col>
-                                    <ion-col size="3">- {{item.price}}</ion-col>
+                                    <ion-col size="3">-{{item.price}}</ion-col>
                                     <ion-col size="2">
                                         <ion-buttons>
                                             <ion-button @click="showSpendingDeleteAlert(i)">
@@ -222,6 +223,21 @@
                 </ion-content>
             </ion-modal>
         </ion-content>
+
+        <ion-footer>
+            <ion-toolbar>
+                <ion-grid>
+                    <ion-row class="align-items-center ion-text-center">
+                        <ion-col size="6">Výdaje celkem</ion-col>
+                        <ion-col size="6">Zbývá celkem</ion-col>
+                    </ion-row>
+                    <ion-row class="align-items-center ion-text-center">
+                        <ion-col size="6"><strong>{{getTotalSpendings()}}&nbsp;{{appSettings.currency}}</strong></ion-col>
+                        <ion-col size="6"><strong>{{getTotalIncome() - getTotalSpendings()}}&nbsp;{{appSettings.currency}}</strong></ion-col>
+                    </ion-row>
+                </ion-grid>
+            </ion-toolbar>
+        </ion-footer>
     </ion-page>
 
     <ion-page v-else>
@@ -275,7 +291,8 @@
         IonCol,
         IonRow,
         IonGrid,
-        alertController
+        alertController,
+        IonFooter
     } from '@ionic/vue';
     import {
         add,
@@ -304,10 +321,11 @@
 
     const appPageData = computed(() => store.state.appPageData);
     const hasAppPageData = computed(() => store.state.hasAppPageData);
+    const appSettings = computed(() => store.state.appSettings);
 
 
     // date
-    let date;
+    let date: Date;
     const initializeDate = () => {
         date = new Date(appPageData.value.page.year, appPageData.value.page.month, 2);
     };
@@ -377,7 +395,7 @@
             key: appPageData.value.page.key,
             index: activeIndex,
             settings: {
-                budget: getSettingsBudget(setingsRadioButtons.value),
+                budget: parseInt(getSettingsBudget(setingsRadioButtons.value)),
                 budgetPercents: getSettingsBudgetPercents(setingsRadioButtons.value)
             }
         }
@@ -451,7 +469,7 @@
                 {
                     name: 'price',
                     type: 'number',
-                    placeholder: '50000',
+                    placeholder: '50000 ' + appSettings.value.currency,
                     label: 'Příjem'
                 },
                 {
@@ -481,7 +499,7 @@
         await alert.present();
     };
     const getTotalIncome = () => {
-        var totalIncome = 0;
+        let totalIncome = 0;
         appPageData.value.data.income.forEach((element: object) => {
             totalIncome += element.price;
         });
@@ -494,7 +512,7 @@
     /////////////////////
     const isDetailOpen = ref(false);
     const activeDetail = ref(-1)
-    const openDetail = (index) => {
+    const openDetail = (index: number) => {
         activeDetail.value = index
         isDetailOpen.value = true;
     };
@@ -515,7 +533,7 @@
                 {
                     name: 'price',
                     type: 'number',
-                    placeholder: '15000',
+                    placeholder: '15000 ' + appSettings.value.currency,
                     label: 'Výdaj'
                 },
                 {
@@ -581,20 +599,57 @@
         await store.dispatch('addAppPageDataSpending', data);
         await store.dispatch('getAppPageData', route.params.id);
     };
-    const getTotalBudgetSpendings = () => {
-        var totalSpendings = 0;
-        appPageData.value.data.budget[activeDetail.value].data.forEach((element: object) => {
+    const getTotalBudgetSpendings = (index: number) => {
+        let totalSpendings = 0;
+        appPageData.value.data.budget[index].data.forEach((element: object) => {
             totalSpendings += element.price;
         });
         return totalSpendings;
     };
-    //todo dodelat
     const getTotalSpendings = () => {
-        var totalSpendings = 0;
-        appPageData.value.data.income.forEach((element: object) => {
-            totalSpendings += element.price;
+        let totalSpendings = 0;
+        appPageData.value.data.budget.forEach((element: object) => {
+            element.data.forEach((element: object) => {
+                totalSpendings += element.price
+            });
         });
         return totalSpendings;
+    };
+    const getTotalSettingsBudget = () => {
+        let totalBudget = 0;
+        appPageData.value.data.budget.forEach((element: object) => {
+            totalBudget += element.settings.budget;
+        });
+        return totalBudget;
+    };
+    const getTotalBudgetBalance = (index: number) => {
+        let settings = appPageData.value.data.budget[index].settings;
+        if (settings.budget > 0){
+            let totalSpendings = getTotalBudgetSpendings(index);
+            return settings.budget - totalSpendings;
+        };
+        if (settings.budgetPercents > 0){
+            let totalSpendings = getTotalSettingsBudget();
+            let totalIncome = getTotalIncome();
+            let totalBudgetSpendings = getTotalBudgetSpendings(index);
+            if ((totalIncome - totalSpendings) <= 0 ) return 0;
+            return ((totalIncome - totalSpendings) * (settings.budgetPercents / 100)) - totalBudgetSpendings;
+        }
+        return 0;
+    };
+    const getBudgetSettings = (index: number) => {
+        let settings = appPageData.value.data.budget[index].settings;
+        if (settings.budget > 0){
+            return settings.budget;
+        };
+        if (settings.budgetPercents > 0){
+            let totalSpendings = getTotalSettingsBudget();
+            let totalIncome = getTotalIncome();
+            let totalBudgetSpendings = getTotalBudgetSpendings(index);
+            if ((totalIncome - totalSpendings) <= 0 ) return 0;
+            return ((totalIncome - totalSpendings) * (settings.budgetPercents / 100));
+        }
+        return 0;
     };
 </script>
 
@@ -662,5 +717,9 @@
 
     ion-row.align-items-center {
         align-items: center;
+    }
+
+    ion-col.spending-budget {
+        font-size: 1.75rem;
     }
 </style>

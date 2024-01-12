@@ -7,6 +7,8 @@ storage.create();
 export default createStore({
     state: {
         appPages: [],
+        appSettings: {},
+        appCurrencies: null,
         appPageData: [],
         isLoading: false,
         hasAppPageData: false,
@@ -15,6 +17,12 @@ export default createStore({
     mutations: {
         updateAppPages(state, newData) {
             state.appPages = newData;
+        },
+        updateAppSettings(state, newData) {
+            state.appSettings = newData;
+        },
+        updateAppCurrencies(state, newData) {
+            state.appCurrencies = newData;
         },
         updateAppPageData(state, pageData) {
             state.appPageData = pageData;
@@ -35,12 +43,48 @@ export default createStore({
 
             try {
                 const appPages = await storage.get('appPages') || [];
-                appPages.sort(function (a, b) {
-                    return b.year - a.year || b.month - a.month;
-                });
                 commit('updateAppPages', appPages);
             } catch (error) {
                 console.error('Error loading data app pages:', error);
+            } finally {
+                commit('setLoading', false);
+            }
+        },
+        async loadAppSettings({ commit }) {
+            commit('setLoading', true);
+
+            try {
+                const appSettings = await storage.get('appSettings') || {};
+                commit('updateAppSettings', appSettings);
+            } catch (error) {
+                console.error('Error loading data app settings:', error);
+            } finally {
+                commit('setLoading', false);
+            }
+        },
+        async setAppSettings({ commit }, settings) {
+            commit('setLoading', true);
+
+            try {
+                storage.set('appSettings', settings);
+                commit('updateAppSettings', settings);
+            } catch (error) {
+                console.error('Error saving data app settings:', error);
+            } finally {
+                commit('setLoading', false);
+            }
+        },
+        async loadAppCurrencies({ commit }) {
+            commit('setLoading', true);
+
+            try {
+                const options = { method: 'GET', headers: { accept: 'application/json' } };
+
+                const response = await fetch('https://api.freecurrencyapi.com/v1/currencies?apikey=fca_live_LBwPlTW7MdrO1T6zMjpFnwKWj45THFbT7MbulSrU&currencies=', options);
+                const data = await response.json();
+                commit('updateAppCurrencies', data.data);
+            } catch (error) {
+                console.error('Error loading currencies:', error);
             } finally {
                 commit('setLoading', false);
             }
@@ -71,7 +115,6 @@ export default createStore({
                 if (appPages.length > 0) {
                     const page = appPages.filter(function (el) { return el.key == id })[0];
                     const pageData = await storage.get(page.key) || [];
-                    pageData.budget = pageData.budget.filter(function (el) { return el.enabled });
                     const returnData = { page: page, data: pageData };
                     commit('updateAppPageData', returnData);
                     commit('setAppPageData', true);
