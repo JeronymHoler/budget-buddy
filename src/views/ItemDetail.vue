@@ -45,7 +45,7 @@
                                 </ion-col>
                                 <ion-col>
                                     <ion-text>Zbývá</ion-text>
-                                    <ion-card-title>{{getTotalBudgetBalance(i)}}&nbsp;{{appSettings.currencySymbol}}</ion-card-title>
+                                    <ion-card-title :class="getErrorClass(getTotalBudgetBalance(i))">{{getTotalBudgetBalance(i)}}&nbsp;{{appSettings.currencySymbol}}</ion-card-title>
                                 </ion-col>
                             </ion-row>
                         </ion-grid>
@@ -188,7 +188,7 @@
                                 <ion-label>Zbývá</ion-label>
                             </ion-col>
                             <ion-col size="12" class="spending-budget">
-                                <span><strong>{{getTotalBudgetBalance(activeDetail)}}&nbsp;{{appSettings.currencySymbol}}</strong></span>
+                                <span :class="getErrorClass(getTotalBudgetBalance(activeDetail))"><strong>{{getTotalBudgetBalance(activeDetail)}}&nbsp;{{appSettings.currencySymbol}}</strong></span>
                             </ion-col>
                         </ion-row>
                         <ion-row class="ion-text-center">
@@ -233,7 +233,7 @@
                     </ion-row>
                     <ion-row class="align-items-center ion-text-center">
                         <ion-col size="6"><strong>{{getTotalSpendings()}}&nbsp;{{appSettings.currencySymbol}}</strong></ion-col>
-                        <ion-col size="6"><strong>{{getTotalIncome() - getTotalSpendings()}}&nbsp;{{appSettings.currencySymbol}}</strong></ion-col>
+                        <ion-col size="6" :class="getErrorClass(getTotalIncome() - getTotalSpendings())"><strong>{{getTotalIncome() - getTotalSpendings()}}&nbsp;{{appSettings.currencySymbol}}</strong></ion-col>
                     </ion-row>
                 </ion-grid>
             </ion-toolbar>
@@ -315,7 +315,9 @@
         isLoading.value = true;
         await store.dispatch('getAppPageData', route.params.id);
         await store.dispatch('getMaxSettingsPercents', route.params.id);
-        initializeDate();
+        if (store.state.hasAppPageData) {
+            initializeDate();
+        }
         isLoading.value = false;
     });
 
@@ -651,6 +653,13 @@
         }
         return 0;
     };
+
+    const getErrorClass = (number: number) => {
+        if (number < 0) {
+            return 'error';
+        };
+        return '';
+    }
 </script>
 
 <style scoped>
@@ -721,5 +730,9 @@
 
     ion-col.spending-budget {
         font-size: 1.75rem;
+    }
+
+    .error {
+        color: red;
     }
 </style>

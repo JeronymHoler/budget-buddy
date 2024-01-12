@@ -83,10 +83,10 @@
     const appSettings = computed(() => store.state.appSettings);
     const settingsCurrencies = computed(() => store.state.appCurrencies);
     const isSettingsOpen = ref(false);
-    let settingsCurrency = ref('');
+    const settingsCurrency = ref('');
 
     const openSettings = async () => {
-        settingsCurrency = ref(store.state.appSettings.currencyCode);
+        settingsCurrency.value = appSettings.value.currencyCode;
         if (settingsCurrencies.value === null){
             await store.dispatch('loadAppCurrencies');
         }

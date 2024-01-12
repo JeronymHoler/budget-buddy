@@ -97,14 +97,29 @@
         IonMenuButton
     } from '@ionic/vue';
     import { useRouter } from 'vue-router';
-    import { ref, computed } from 'vue'
+    import { ref, computed, onBeforeMount } from 'vue'
     import { useStore } from 'vuex';
 
     // data
     const store = useStore();
+
+    onBeforeMount(async () => {
+        await store.dispatch('getLatestAppPageData');
+
+        if (appLatestPageData.value != null) {
+            necessaryExpenses.value = appLatestPageData.value.data.budget[0].enabled;
+            food.value = appLatestPageData.value.data.budget[1].enabled;
+            car.value = appLatestPageData.value.data.budget[2].enabled;
+            investments.value = appLatestPageData.value.data.budget[3].enabled;
+            kids.value = appLatestPageData.value.data.budget[4].enabled;
+            pets.value = appLatestPageData.value.data.budget[5].enabled;
+            unexpectedExpenses.value = appLatestPageData.value.data.budget[6].enabled;
+        }
+    });
     const isLoading = computed(() => store.state.isLoading);
     const appPages = computed(() => store.state.appPages);
     const sortedAppPagesLength = computed(() => appPages.value.length);
+    const appLatestPageData = computed(() => store.state.appPageData);
 
     // router
     const router = useRouter();

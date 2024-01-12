@@ -9,7 +9,7 @@ export default createStore({
         appPages: [],
         appSettings: {},
         appCurrencies: null,
-        appPageData: [],
+        appPageData: null,
         isLoading: false,
         hasAppPageData: false,
         maxSettingsPercents: 0
@@ -132,16 +132,36 @@ export default createStore({
                 commit('setLoading', false);
             }
         },
+        async getLatestAppPageData({ commit }) {
+            commit('setLoading', true);
+
+            try {
+                const appPages = await storage.get('appPages') || [];
+                if (appPages.length > 0) {
+                    const page = appPages[0];
+                    const pageData = await storage.get(page.key) || [];
+                    const returnData = { page: page, data: pageData };
+                    commit('updateAppPageData', returnData);
+                    commit('setAppPageData', true);
+                }
+            } catch (error) {
+                console.error('Error loading data for page:', error);
+            } finally {
+                commit('setLoading', false);
+            }
+        },
         async getMaxSettingsPercents({ commit }, key) {
             commit('setLoading', true);
 
             try {
-                const pageData = await storage.get(key) || [];
-                let maxSettingsPercents = 100;
-                for (let i = 0; i < pageData.budget.length; i++) {
-                    maxSettingsPercents -= pageData.budget[i].settings.budgetPercents;
+                const pageData = await storage.get(key) || null;
+                if (pageData != null) {
+                    let maxSettingsPercents = 100;
+                    for (let i = 0; i < pageData.budget.length; i++) {
+                        maxSettingsPercents -= pageData.budget[i].settings.budgetPercents;
+                    }
+                    commit('updateMaxSettingsPercents', maxSettingsPercents);
                 }
-                commit('updateMaxSettingsPercents', maxSettingsPercents);
             } catch (error) {
                 console.error('Error loading data for settings:', error);
             } finally {
