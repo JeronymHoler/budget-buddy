@@ -54,7 +54,14 @@ export default createStore({
             commit('setLoading', true);
 
             try {
-                const appSettings = await storage.get('appSettings') || {};
+                let appSettings = await storage.get('appSettings') || null;
+                if (appSettings === null) { //set default currency
+                    appSettings = {
+                        currencyCode: 'CZK',
+                        currencySymbol: 'Kč'
+                    }
+                    storage.set('appSettings', appSettings);
+                }
                 commit('updateAppSettings', appSettings);
             } catch (error) {
                 console.error('Error loading data app settings:', error);

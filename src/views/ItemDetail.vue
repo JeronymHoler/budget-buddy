@@ -41,11 +41,11 @@
                             <ion-row>
                                 <ion-col>
                                     <ion-text>Výdaje</ion-text>
-                                    <ion-card-title>{{getTotalBudgetSpendings(i)}}&nbsp;{{appSettings.currency}}</ion-card-title>
+                                    <ion-card-title>{{getTotalBudgetSpendings(i)}}&nbsp;{{appSettings.currencySymbol}}</ion-card-title>
                                 </ion-col>
                                 <ion-col>
                                     <ion-text>Zbývá</ion-text>
-                                    <ion-card-title>{{getTotalBudgetBalance(i)}}&nbsp;{{appSettings.currency}}</ion-card-title>
+                                    <ion-card-title>{{getTotalBudgetBalance(i)}}&nbsp;{{appSettings.currencySymbol}}</ion-card-title>
                                 </ion-col>
                             </ion-row>
                         </ion-grid>
@@ -129,7 +129,7 @@
                                 <h3>Příjmy celkem:</h3>
                             </ion-col>
                             <ion-col>
-                                <h3>{{getTotalIncome()}}&nbsp;{{appSettings.currency}}</h3>
+                                <h3>{{getTotalIncome()}}&nbsp;{{appSettings.currencySymbol}}</h3>
                             </ion-col>
                         </ion-row>
                         <ion-row class="ion-text-center">
@@ -182,13 +182,13 @@
                             <ion-col size="6">
                                 <ion-label>Nastavený budget</ion-label>
                             </ion-col>
-                            <ion-col size="6"><strong>{{getTotalBudgetSpendings(activeDetail)}}&nbsp;{{appSettings.currency}}</strong></ion-col>
-                            <ion-col size="6"><strong>{{getBudgetSettings(activeDetail)}}&nbsp;{{appSettings.currency}}</strong></ion-col>
+                            <ion-col size="6"><strong>{{getTotalBudgetSpendings(activeDetail)}}&nbsp;{{appSettings.currencySymbol}}</strong></ion-col>
+                            <ion-col size="6"><strong>{{getBudgetSettings(activeDetail)}}&nbsp;{{appSettings.currencySymbol}}</strong></ion-col>
                             <ion-col size="12">
                                 <ion-label>Zbývá</ion-label>
                             </ion-col>
                             <ion-col size="12" class="spending-budget">
-                                <span><strong>{{getTotalBudgetBalance(activeDetail)}}&nbsp;{{appSettings.currency}}</strong></span>
+                                <span><strong>{{getTotalBudgetBalance(activeDetail)}}&nbsp;{{appSettings.currencySymbol}}</strong></span>
                             </ion-col>
                         </ion-row>
                         <ion-row class="ion-text-center">
@@ -232,8 +232,8 @@
                         <ion-col size="6">Zbývá celkem</ion-col>
                     </ion-row>
                     <ion-row class="align-items-center ion-text-center">
-                        <ion-col size="6"><strong>{{getTotalSpendings()}}&nbsp;{{appSettings.currency}}</strong></ion-col>
-                        <ion-col size="6"><strong>{{getTotalIncome() - getTotalSpendings()}}&nbsp;{{appSettings.currency}}</strong></ion-col>
+                        <ion-col size="6"><strong>{{getTotalSpendings()}}&nbsp;{{appSettings.currencySymbol}}</strong></ion-col>
+                        <ion-col size="6"><strong>{{getTotalIncome() - getTotalSpendings()}}&nbsp;{{appSettings.currencySymbol}}</strong></ion-col>
                     </ion-row>
                 </ion-grid>
             </ion-toolbar>
@@ -469,7 +469,7 @@
                 {
                     name: 'price',
                     type: 'number',
-                    placeholder: '50000 ' + appSettings.value.currency,
+                    placeholder: '50000 ' + appSettings.value.currencySymbol,
                     label: 'Příjem'
                 },
                 {
@@ -489,7 +489,7 @@
                 {
                     text: 'Ok',
                     handler: (alertData) => {
-                        if (alertData.name != '' || alertData.price > 0){
+                        if (alertData.name != '' && alertData.price > 0 && !isNaN(alertData.price)){
                             saveIncome(alertData);
                         }
                     }
@@ -533,7 +533,7 @@
                 {
                     name: 'price',
                     type: 'number',
-                    placeholder: '15000 ' + appSettings.value.currency,
+                    placeholder: '15000 ' + appSettings.value.currencySymbol,
                     label: 'Výdaj'
                 },
                 {
@@ -553,7 +553,7 @@
                 {
                     text: 'Ok',
                     handler: (alertData) => {
-                        if (alertData.name != '' || alertData.price > 0){
+                        if (alertData.name != '' && alertData.price > 0 && !isNaN(alertData.price)){
                             saveSpending(alertData);
                         }
                     }

@@ -37,7 +37,7 @@
                     <ion-item>
                         <IonLabel>Měna</IonLabel>
                         <IonSelect v-model="settingsCurrency" label="">
-                            <IonSelectOption v-for="(currency, i) in settingsCurrencies" :key="i" :value="currency.symbol">
+                            <IonSelectOption v-for="(currency, i) in settingsCurrencies" :key="i" :value="currency.code">
                                 {{ currency.name }}
                             </IonSelectOption>
                         </IonSelect>
@@ -86,7 +86,7 @@
     let settingsCurrency = ref('');
 
     const openSettings = async () => {
-        settingsCurrency = ref(store.state.appSettings.currency);
+        settingsCurrency = ref(store.state.appSettings.currencyCode);
         if (settingsCurrencies.value === null){
             await store.dispatch('loadAppCurrencies');
         }
@@ -97,9 +97,10 @@
 
     const saveSettings = async () => {
         const settings = {
-            currency: settingsCurrency.value
+            currencyCode: settingsCurrencies.value[settingsCurrency.value].code,
+            currencySymbol: settingsCurrencies.value[settingsCurrency.value].symbol
         };
-        console.log(settingsCurrency.value);
+        console.log(settings);
         await store.dispatch('setAppSettings', settings);
     };
 </script>
