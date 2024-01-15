@@ -14,15 +14,14 @@
             </ion-toolbar>
         </ion-header>
 
-        <ion-content :fullscreen="true">
-            <ion-header collapse="condense">
-                <ion-toolbar class="ion-text-center">
-                    <ion-text>
-                        <h1>Úvod</h1>
-                    </ion-text>
-                    <p>Vítejte v aplikaci Budget buddy.</p>
-                </ion-toolbar>
-            </ion-header>
+        <ion-content :fullscreen="true" class="ion-text-center">
+            <ion-text>
+                <h1>Úvod</h1>
+            </ion-text>
+            <p>Vítejte v aplikaci Budget buddy.</p>
+            <ion-button @click="selectedIndex = -1" size="small" class="ion-text-center" router-direction="root" :router-link="newItemURL">
+                <ion-icon slot="start" :icon="add"></ion-icon>Vytvořit novou položku
+            </ion-button>
 
             <ion-modal :is-open="isSettingsOpen">
                 <ion-header>
@@ -69,13 +68,16 @@
         IonText
     } from '@ionic/vue';
     import {
-        settings
+        settings,
+        add
     } from 'ionicons/icons';
     import { useRouter } from 'vue-router';
     import { ref, computed } from 'vue'
     import { useStore } from 'vuex';
 
     const store = useStore();
+
+    const newItemURL = '/item/New'
 
     /////////////////////
     // settings start

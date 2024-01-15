@@ -187,8 +187,8 @@
                     title: 'Nutné výdaje',
                     enabled: necessaryExpenses.value,
                     settings: {
-                        budget: 0,
-                        budgetPercents: 0
+                        budget: appLatestPageData.value ? appLatestPageData.value.data.budget[0].settings.budget : 0,
+                        budgetPercents: appLatestPageData.value ? appLatestPageData.value.data.budget[0].settings.budgetPercents : 0
                     },
                     data: []
                 },
@@ -196,8 +196,8 @@
                     title: 'Jídlo',
                     enabled: food.value,
                     settings: {
-                        budget: 0,
-                        budgetPercents: 0
+                        budget: appLatestPageData.value ? appLatestPageData.value.data.budget[1].settings.budget : 0,
+                        budgetPercents: appLatestPageData.value ? appLatestPageData.value.data.budget[1].settings.budgetPercents : 0
                     },
                     data: []
                 },
@@ -205,8 +205,8 @@
                     title: 'Auto',
                     enabled: car.value,
                     settings: {
-                        budget: 0,
-                        budgetPercents: 0
+                        budget: appLatestPageData.value ? appLatestPageData.value.data.budget[2].settings.budget : 0,
+                        budgetPercents: appLatestPageData.value ? appLatestPageData.value.data.budget[2].settings.budgetPercents : 0
                     },
                     data: []
 
@@ -215,8 +215,8 @@
                     title: 'Investice',
                     enabled: investments.value,
                     settings: {
-                        budget: 0,
-                        budgetPercents: 0
+                        budget: appLatestPageData.value ? appLatestPageData.value.data.budget[3].settings.budget : 0,
+                        budgetPercents: appLatestPageData.value ? appLatestPageData.value.data.budget[3].settings.budgetPercents : 0
                     },
                     data: []
 
@@ -225,8 +225,8 @@
                     title: 'Děti',
                     enabled: kids.value,
                     settings: {
-                        budget: 0,
-                        budgetPercents: 0
+                        budget: appLatestPageData.value ? appLatestPageData.value.data.budget[4].settings.budget : 0,
+                        budgetPercents: appLatestPageData.value ? appLatestPageData.value.data.budget[4].settings.budgetPercents : 0
                     },
                     data: []
 
@@ -235,8 +235,8 @@
                     title: 'Domácí mazlíčci',
                     enabled: pets.value,
                     settings: {
-                        budget: 0,
-                        budgetPercents: 0
+                        budget: appLatestPageData.value ? appLatestPageData.value.data.budget[5].settings.budget : 0,
+                        budgetPercents: appLatestPageData.value ? appLatestPageData.value.data.budget[5].settings.budgetPercents : 0
                     },
                     data: []
                 }
@@ -245,8 +245,8 @@
                     title: 'Nečekané výdaje',
                     enabled: unexpectedExpenses.value,
                     settings: {
-                        budget: 0,
-                        budgetPercents: 0
+                        budget: appLatestPageData.value ? appLatestPageData.value.data.budget[6].settings.budget : 0,
+                        budgetPercents: appLatestPageData.value ? appLatestPageData.value.data.budget[6].settings.budgetPercents : 0
                     },
                     data: []
                 }
